@@ -135,10 +135,22 @@ const AdminHome = () => {
   };
 
   const getStatusBadge = (status) => {
-    if (status === 'active' || status === 'In Progress') {
-      return <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">In Progress</span>;
-    }
-    return <span className="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Completed</span>;
+    const statusConfig = {
+      'Planning': { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Planning' },
+      'In Progress': { bg: 'bg-blue-100', text: 'text-blue-700', label: 'In Progress' },
+      'Under Review': { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Under Review' },
+      'Completed': { bg: 'bg-green-100', text: 'text-green-700', label: 'Completed' },
+      'Published': { bg: 'bg-purple-100', text: 'text-purple-700', label: 'Published' },
+      'On Hold': { bg: 'bg-orange-100', text: 'text-orange-700', label: 'On Hold' },
+      'Cancelled': { bg: 'bg-red-100', text: 'text-red-700', label: 'Cancelled' }
+    };
+
+    const config = statusConfig[status] || statusConfig['In Progress'];
+    return (
+      <span className={`inline-block px-3 py-1 ${config.bg} ${config.text} rounded-full text-xs font-medium`}>
+        {config.label}
+      </span>
+    );
   };
 
   return (
@@ -148,7 +160,9 @@ const AdminHome = () => {
       <main className="flex-1 p-12">
         <div className="mb-12">
           <p className="text-gray-400 text-sm mb-2">Good Morning,</p>
-          <h1 className="text-5xl font-bold text-gray-900">Dr. Prashant Singh Rana</h1>
+          <h1 className="text-5xl font-bold text-gray-900">
+           Dr. {userProfile?.name || 'Admin'}
+          </h1>
         </div>
 
         {loading ? (

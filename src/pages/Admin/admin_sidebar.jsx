@@ -3,11 +3,16 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import { 
+  Home,
   Bot,
   Users,
+  FolderKanban,
+  FlaskConical,
+  Lightbulb,
   Menu,
   X,
-  LogOut
+  LogOut,
+  HelpCircle
 } from 'lucide-react';
 import { handleLogout } from '../../utils/authHelpers';
 
@@ -22,15 +27,16 @@ const AdminSidebar = () => {
   const [helpError, setHelpError] = useState(null);
 
   const menuItems = [
-    { icon: Bot, label: 'Home', path: '/admin/home' },
+    { icon: Home, label: 'Home', path: '/admin/home' },
     { icon: Bot, label: 'AI', path: '/admin/ai' },
-    // { icon: Bot, label: 'Chat', path: '/admin/chat' },
+    // { icon: MessageSquare, label: 'Chat', path: '/admin/chat' },
+    { icon: Users, label: 'Professors', path: '/admin/professors' },
     { icon: Users, label: 'Students', path: '/admin/students' },
-    { icon: Bot, label: 'Projects', path: '/admin/projects' },
-    { icon: Bot, label: 'Research', path: '/admin/research' },
-    { icon: Bot, label: 'Patent', path: '/admin/patent' },
-    // { icon: Bot, label: 'Placement', path: '/admin/placement' },
-    // { icon: Bot, label: 'Saved', path: '/admin/saved' },
+    { icon: FolderKanban, label: 'Projects', path: '/admin/projects' },
+    { icon: FlaskConical, label: 'Research', path: '/admin/research' },
+    { icon: Lightbulb, label: 'Patent', path: '/admin/patent' },
+    // { icon: Briefcase, label: 'Placement', path: '/admin/placement' },
+    // { icon: Bookmark, label: 'Saved', path: '/admin/saved' },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -159,23 +165,6 @@ const AdminSidebar = () => {
 
         {/* User Section at Bottom */}
         <div className="px-3 py-4 border-t border-gray-200">
-          {isOpen ? (
-            <div className="flex items-center gap-3 px-3 py-2 mb-2">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-medium text-gray-700">P</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">Prashant.S.Rana</p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex justify-center mb-2">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-700">P</span>
-              </div>
-            </div>
-          )}
-          
           {/* Help Button */}
           <button
             onClick={() => setShowHelp(true)}
@@ -186,7 +175,7 @@ const AdminSidebar = () => {
             `}
             title={!isOpen ? 'Help' : ''}
           >
-            <Bot size={18} className="text-gray-500 group-hover:text-gray-700 flex-shrink-0" />
+            <HelpCircle size={18} className="text-gray-500 group-hover:text-gray-700 flex-shrink-0" />
             {isOpen && <span className="text-sm font-medium">Help</span>}
           </button>
 

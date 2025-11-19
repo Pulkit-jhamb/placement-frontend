@@ -90,61 +90,71 @@ const AdminStudents = () => {
       <div className="flex-1 flex flex-col overflow-auto">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-gray-900">Students</h1>
+            <div className="text-sm text-gray-600">
+              Total: <span className="font-semibold">{students.length}</span> students
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Find students"
+                placeholder="Search by name, email, or roll number"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <select
-                value={branchFilter}
-                onChange={(e) => setBranchFilter(e.target.value)}
-                className="bg-transparent border-none outline-none cursor-pointer text-gray-600"
-              >
-                <option value="">Branch</option>
-                <option value="CSE">CSE</option>
-                <option value="RAI">RAI</option>
-                <option value="ECE">ECE</option>
-                <option value="ME">ME</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </button>
+            <select
+              value={branchFilter}
+              onChange={(e) => setBranchFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-gray-600 bg-white"
+            >
+              <option value="">All Branches</option>
+              <option value="Computer Science & Engineering (COPC/COSE/COE)">Computer Science & Engineering</option>
+              <option value="Computer Science and Business Systems (COBS)">CS and Business Systems</option>
+              <option value="Electrical and Computer Engineering (EEC)">Electrical and Computer</option>
+              <option value="Electronics and Computer Engineering (ENC)">Electronics and Computer</option>
+              <option value="Artificial Intelligence and Machine Learning (AIML)">AI and ML</option>
+              <option value="Robotics and Artificial Intelligence (RAI)">Robotics and AI</option>
+              <option value="Civil Engineering with Computer Applications (CCA)">Civil with Computer</option>
+              <option value="Electronics & Communication Engineering (ECE)">Electronics & Communication</option>
+              <option value="Electrical Engineering (ELE)">Electrical Engineering</option>
+              <option value="Electronics (Instrumentation & Control) Engineering (EIC)">Electronics (I&C)</option>
+              <option value="Electronics Engineering (VLSI Design and Technology) (EVD)">Electronics (VLSI)</option>
+              <option value="Mechanical Engineering (MEE)">Mechanical Engineering</option>
+              <option value="Mechatronics (MEC)">Mechatronics</option>
+              <option value="Civil Engineering (CIE)">Civil Engineering</option>
+              <option value="Chemical Engineering (CHE)">Chemical Engineering</option>
+              <option value="Biotechnology (BT)">Biotechnology</option>
+              <option value="Biomedical Engineering (BME)">Biomedical Engineering</option>
+            </select>
             
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <select
-                value={cgpaFilter}
-                onChange={(e) => setCgpaFilter(e.target.value)}
-                className="bg-transparent border-none outline-none cursor-pointer text-gray-600"
-              >
-                <option value="">CGPA</option>
-                <option value="9+">9+</option>
-                <option value="8+">8+</option>
-                <option value="7+">7+</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </button>
+            <select
+              value={cgpaFilter}
+              onChange={(e) => setCgpaFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-gray-600 bg-white"
+            >
+              <option value="">All CGPA</option>
+              <option value="9+">9+</option>
+              <option value="8+">8+</option>
+              <option value="7+">7+</option>
+            </select>
             
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <select
-                value={yearFilter}
-                onChange={(e) => setYearFilter(e.target.value)}
-                className="bg-transparent border-none outline-none cursor-pointer text-gray-600"
-              >
-                <option value="">Year</option>
-                <option value="1st">1st</option>
-                <option value="2nd">2nd</option>
-                <option value="3rd">3rd</option>
-                <option value="4th">4th</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </button>
+            <select
+              value={yearFilter}
+              onChange={(e) => setYearFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-gray-600 bg-white"
+            >
+              <option value="">All Years</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
           </div>
         </div>
 
@@ -155,150 +165,147 @@ const AdminStudents = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8">
-              <div className="text-red-600 text-lg font-semibold mb-2">Error Loading Students</div>
-              <div className="text-gray-600 mb-4">{error}</div>
-              <button 
-                onClick={fetchStudents}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Retry
-              </button>
-              <div className="mt-4 text-sm text-gray-500">
-                Check browser console for more details
+            <div className="flex items-center justify-center h-full min-h-[400px]">
+              <div className="text-center">
+                <p className="text-red-600 mb-2">{error}</p>
+                <button 
+                  onClick={fetchStudents}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Retry
+                </button>
               </div>
             </div>
-          ) : filteredStudents.length === 0 && students.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8">
-              <div className="text-gray-600 text-lg font-semibold mb-2">No Students Found</div>
-              <div className="text-gray-500">No students have registered yet.</div>
+          ) : filteredStudents.length === 0 ? (
+            <div className="flex items-center justify-center h-full min-h-[400px]">
+              <div className="text-center text-gray-500">
+                <p className="text-lg mb-2">No students found</p>
+                <p className="text-sm">
+                  {searchQuery || branchFilter || cgpaFilter || yearFilter ? 'Try adjusting your filters' : 'No students have registered yet'}
+                </p>
+              </div>
             </div>
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-700 text-white sticky top-0">
-                <tr>
-                  <th className="px-6 py-4 text-left w-12"></th>
-                  <th className="px-6 py-4 text-left">
-                    <div className="flex items-center gap-2">
-                      <span>👤</span>
-                      <span>Student Name</span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <div className="flex items-center gap-2">
-                      <span>🔧</span>
-                      <span>Skillset</span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <div className="flex items-center gap-2">
-                      <span>📁</span>
-                      <span>Projects</span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <div className="flex items-center gap-2">
-                      <span>💼</span>
-                      <span>Experience</span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <div className="flex items-center gap-2">
-                      <span>#</span>
-                      <span>CGPA</span>
-                      <span>⬇️</span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left">Branch</th>
-                  <th className="px-6 py-4 text-left">
-                    <div className="flex items-center gap-2">
-                      <span>👁️</span>
-                      <span>View Profile</span>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                {filteredStudents.length === 0 ? (
-                  <tr>
-                    <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
-                      No students found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredStudents.map((student, index) => (
-                    <tr key={student.id} className="border-b border-gray-200 hover:bg-gray-50">
-                      <td className="px-6 py-4 text-gray-600">{index + 1}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-md w-fit">
-                          <span>👤</span>
-                          <span>{student.name || 'Unknown'}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-wrap gap-2">
-                          {student.skills && Array.isArray(student.skills) && student.skills.length > 0 ? (
-                            student.skills.slice(0, 3).map((skill, idx) => (
-                              <div
-                                key={idx}
-                                className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getSkillColor(skill)}`}
-                              >
-                                <span>●</span>
-                                <span>{skill}</span>
-                              </div>
-                            ))
-                          ) : (
-                            <span className="text-gray-400 text-sm">No skills listed</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-2">
-                          {student.projects && Array.isArray(student.projects) && student.projects.length > 0 ? (
-                            student.projects.slice(0, 2).map((project, idx) => (
-                              <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm">
-                                <span>{typeof project === 'string' ? project : project.title || project.name || 'Project'}</span>
-                                <ChevronDown className="w-4 h-4" />
-                              </div>
-                            ))
-                          ) : (
-                            <span className="text-gray-400 text-sm">No projects</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-2">
-                          {student.experiences && Array.isArray(student.experiences) && student.experiences.length > 0 ? (
-                            student.experiences.slice(0, 1).map((exp, idx) => (
-                              <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm w-fit">
-                                <span>{typeof exp === 'string' ? exp : exp.company || exp.title || 'Experience'}</span>
-                                <ChevronDown className="w-4 h-4" />
-                              </div>
-                            ))
-                          ) : (
-                            <span className="text-gray-400 text-sm">No experience</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-700 font-medium">
-                        {student.cgpa ? student.cgpa.toFixed(2) : '0.00'}
-                      </td>
-                      <td className="px-6 py-4 text-gray-700">
-                        {extractBranchCode(student.field)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <button 
-                          onClick={() => navigate(`/admin/students/${student.id}`)}
-                          className="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800"
-                        >
-                          View Profile
-                        </button>
-                      </td>
+            <div className="p-6">
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Student
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Branch
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        CGPA
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Skills
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Projects
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Experience
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Action
+                      </th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredStudents.map((student) => (
+                      <tr key={student.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="font-medium text-gray-900">{student.name || 'Unknown'}</div>
+                            <div className="text-sm text-gray-500">{student.email}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {extractBranchCode(student.field)}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-800 font-bold">
+                            {student.cgpa ? student.cgpa.toFixed(1) : '0.0'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-1">
+                            {student.skills && Array.isArray(student.skills) && student.skills.length > 0 ? (
+                              student.skills.slice(0, 3).map((skill, idx) => (
+                                <span
+                                  key={idx}
+                                  className={`px-2 py-1 rounded text-xs font-medium ${getSkillColor(skill)}`}
+                                >
+                                  {skill}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-gray-400 text-sm">No skills</span>
+                            )}
+                            {student.skills && student.skills.length > 3 && (
+                              <span className="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-700">
+                                +{student.skills.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
+                            {student.projects && Array.isArray(student.projects) && student.projects.length > 0 ? (
+                              <>
+                                {student.projects.slice(0, 2).map((project, idx) => (
+                                  <span key={idx} className="text-sm text-gray-700">
+                                    • {typeof project === 'string' ? project : project.title || project.name || 'Project'}
+                                  </span>
+                                ))}
+                                {student.projects.length > 2 && (
+                                  <span className="text-xs text-gray-500">
+                                    +{student.projects.length - 2} more
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-gray-400 text-sm">No projects</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
+                            {student.experiences && Array.isArray(student.experiences) && student.experiences.length > 0 ? (
+                              <>
+                                {student.experiences.slice(0, 2).map((exp, idx) => (
+                                  <span key={idx} className="text-sm text-gray-700">
+                                    • {typeof exp === 'string' ? exp : exp.company || exp.title || 'Experience'}
+                                  </span>
+                                ))}
+                                {student.experiences.length > 2 && (
+                                  <span className="text-xs text-gray-500">
+                                    +{student.experiences.length - 2} more
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-gray-400 text-sm">No experience</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <button 
+                            onClick={() => navigate(`/admin/students/${student.id}`)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                          >
+                            View Profile
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
         </div>
       </div>

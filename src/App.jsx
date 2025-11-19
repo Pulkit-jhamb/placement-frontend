@@ -18,9 +18,9 @@ import { setupAxiosInterceptors } from "./utils/axiosConfig";
 
 // Landing pages
 import CarevoLanding from "./pages/landing_page/landing_page";
-import Pricing from "./pages/landing_page/pricing";
-import AboutTeam from "./pages/landing_page/about_team";
-import Product from "./pages/landing_page/product";
+// import Pricing from "./pages/landing_page/pricing";
+// import AboutTeam from "./pages/landing_page/about_team";
+// import Product from "./pages/landing_page/product";
 
 // Auth pages
 import Login from "./pages/auth/login";
@@ -55,6 +55,7 @@ import AdminChat from "./pages/Admin/admin_chat";
 import AdminProjects from "./pages/Admin/admin_projects";
 import AdminResearch from "./pages/Admin/admin_research";
 import AdminPatent from "./pages/Admin/admin_patent";
+import HodProf from "./pages/Admin/hod_prof";
 import AdminStudents from "./pages/Admin/admin_students";
 import AdminStudentProfile from "./pages/Admin/admin_student_profile";
 import AdminPlacement from "./pages/Admin/admin_placement";
@@ -112,7 +113,9 @@ function ProtectedRoute({ children, allowedUserTypes = [] }) {
       }
 
       try {
-        const response = await axios.get(API_ENDPOINTS.AUTH_STATUS);
+        const response = await axios.get(API_ENDPOINTS.AUTH_STATUS, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
         if (response.data.authenticated) {
           // Restrict by user type
@@ -212,7 +215,10 @@ function PublicRoute({ children }) {
       }
 
       try {
-        const response = await axios.get(API_ENDPOINTS.AUTH_STATUS);
+        const response = await axios.get(API_ENDPOINTS.AUTH_STATUS, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
         if (response.data.authenticated) {
           if (userType === "student") {
             try {
@@ -279,9 +285,9 @@ function AppRoutes() {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<PublicRoute><CarevoLanding /></PublicRoute>} />
-      <Route path="/about-team" element={<PublicRoute><AboutTeam /></PublicRoute>} />
+      {/* <Route path="/about-team" element={<PublicRoute><AboutTeam /></PublicRoute>} />
       <Route path="/product" element={<PublicRoute><Product /></PublicRoute>} />
-      <Route path="/pricing" element={<PublicRoute><Pricing /></PublicRoute>} />
+      <Route path="/pricing" element={<PublicRoute><Pricing /></PublicRoute>} /> */}
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
 
@@ -387,6 +393,10 @@ function AppRoutes() {
         element={<ProtectedRoute allowedUserTypes={["admin"]}><AdminPatent /></ProtectedRoute>}
       />
       <Route
+        path="/admin/professors"
+        element={<ProtectedRoute allowedUserTypes={["admin"]}><HodProf /></ProtectedRoute>}
+      />
+      <Route
         path="/admin/students"
         element={<ProtectedRoute allowedUserTypes={["admin"]}><AdminStudents /></ProtectedRoute>}
       />
@@ -452,7 +462,12 @@ function AppRoutes() {
 // =========================
 // MAIN APP COMPONENT
 // =========================
+import ProfIdModal from "./components/modals/ProfIdModal";
+
 export default function App() {
+  const [showProfIdModal, setShowProfIdModal] = useState(false);
+  const [profIdChecked, setProfIdChecked] = useState(false);
+
   useEffect(() => {
     setupAxiosInterceptors();
     console.log("✅ Carevo App initialized");
@@ -460,11 +475,46 @@ export default function App() {
       "🔡 API Base:",
       API_ENDPOINTS.AUTH_STATUS.replace("/api/auth/status", "")
     );
-  }, []);
+
+    // Check if admin needs to set profId
+    const checkProfId = async () => {
+      const token = localStorage.getItem("authToken");
+      const userType = localStorage.getItem("userType");
+
+      if (token && userType === "admin" && !profIdChecked) {
+        try {
+          const response = await axios.get(API_ENDPOINTS.USER, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          const profId = response.data.profId;
+          if (!profId || profId.trim() === "") {
+            setShowProfIdModal(true);
+          }
+          setProfIdChecked(true);
+        } catch (error) {
+          console.error("Failed to check profId:", error);
+          setProfIdChecked(true);
+        }
+      }
+    };
+
+    checkProfId();
+  }, [profIdChecked]);
+
+  const handleProfIdSuccess = () => {
+    setShowProfIdModal(false);
+    setProfIdChecked(true);
+  };
 
   return (
     <Router>
       <AppRoutes />
+      <ProfIdModal 
+        isOpen={showProfIdModal} 
+        onClose={() => setShowProfIdModal(false)}
+        onSuccess={handleProfIdSuccess}
+      />
     </Router>
   );
 }

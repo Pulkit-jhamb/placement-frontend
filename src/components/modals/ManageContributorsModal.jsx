@@ -5,12 +5,16 @@ import { API_ENDPOINTS } from '../../config';
 
 const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType, onUpdate }) => {
   const [contributors, setContributors] = useState([]);
+  const [professors, setProfessors] = useState([]);
   const [newRollNo, setNewRollNo] = useState('');
+  const [newProfId, setNewProfId] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editRollNo, setEditRollNo] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [studentNames, setStudentNames] = useState({});
+  const [professorNames, setProfessorNames] = useState({});
+  const [validating, setValidating] = useState(false);
 
   useEffect(() => {
     if (isOpen && opportunity) {
@@ -21,22 +25,31 @@ const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType
   const loadContributors = () => {
     // Load existing contributors from opportunity
     const existingContributors = opportunity.contributors || [];
+    const existingProfessors = opportunity.professors || [];
     setContributors(existingContributors);
+    setProfessors(existingProfessors);
     
     // Fetch student names for all contributors
     existingContributors.forEach(contributor => {
       fetchStudentName(contributor.rollNo);
+    });
+    
+    // Fetch professor names
+    existingProfessors.forEach(profId => {
+      fetchProfessorName(profId);
     });
   };
 
   const fetchStudentName = async (rollNo) => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get(`${API_ENDPOINTS.USER}/by-rollno/${rollNo}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.post(
+        `${API_ENDPOINTS.USER}/validate/rollNo`,
+        { rollNo },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       
-      if (response.data && response.data.name) {
+      if (response.data && response.data.valid) {
         setStudentNames(prev => ({
           ...prev,
           [rollNo]: response.data.name
@@ -47,6 +60,30 @@ const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType
       setStudentNames(prev => ({
         ...prev,
         [rollNo]: 'Unknown Student'
+      }));
+    }
+  };
+
+  const fetchProfessorName = async (profId) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.post(
+        `${API_ENDPOINTS.USER}/validate/profId`,
+        { profId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      if (response.data && response.data.valid) {
+        setProfessorNames(prev => ({
+          ...prev,
+          [profId]: response.data.name
+        }));
+      }
+    } catch (err) {
+      console.error(`Failed to fetch professor name for ${profId}:`, err);
+      setProfessorNames(prev => ({
+        ...prev,
+        [profId]: 'Unknown Professor'
       }));
     }
   };
@@ -64,40 +101,45 @@ const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType
     }
 
     setLoading(true);
+    setValidating(true);
     setError('');
 
     try {
       const token = localStorage.getItem('authToken');
       
-      // Verify student exists
-      const studentResponse = await axios.get(`${API_ENDPOINTS.USER}/by-rollno/${newRollNo.trim()}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Validate student roll number
+      const validationResponse = await axios.post(
+        `${API_ENDPOINTS.USER}/validate/rollNo`,
+        { rollNo: newRollNo.trim() },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      if (!studentResponse.data) {
-        setError('Student not found with this roll number');
+      if (!validationResponse.data.valid) {
+        setError(validationResponse.data.message || 'Invalid roll number');
         setLoading(false);
+        setValidating(false);
         return;
       }
 
       const newContributor = {
         rollNo: newRollNo.trim(),
-        studentId: studentResponse.data.id,
+        studentId: validationResponse.data.id,
         addedAt: new Date().toISOString()
       };
 
       const updatedContributors = [...contributors, newContributor];
       
       // Update opportunity in backend
-      await updateOpportunityContributors(updatedContributors);
+      await updateOpportunityContributors(updatedContributors, professors);
       
       setContributors(updatedContributors);
       setStudentNames(prev => ({
         ...prev,
-        [newRollNo.trim()]: studentResponse.data.name
+        [newRollNo.trim()]: validationResponse.data.name
       }));
       setNewRollNo('');
       setError('');
+      setValidating(false);
     } catch (err) {
       console.error('Failed to add contributor:', err);
       setError(err.response?.data?.message || 'Failed to add student');
@@ -190,7 +232,62 @@ const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType
     }
   };
 
-  const updateOpportunityContributors = async (updatedContributors) => {
+  const handleAddProfessor = async () => {
+    if (!newProfId.trim()) {
+      setError('Please enter a professor ID');
+      return;
+    }
+
+    // Check if already exists
+    if (professors.includes(newProfId.trim())) {
+      setError('This professor is already added');
+      return;
+    }
+
+    setLoading(true);
+    setValidating(true);
+    setError('');
+
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      // Validate professor ID
+      const validationResponse = await axios.post(
+        `${API_ENDPOINTS.USER}/validate/profId`,
+        { profId: newProfId.trim() },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!validationResponse.data.valid) {
+        setError(validationResponse.data.message || 'Invalid professor ID');
+        setLoading(false);
+        setValidating(false);
+        return;
+      }
+
+      const updatedProfessors = [...professors, newProfId.trim()];
+      
+      // Update opportunity in backend
+      await updateOpportunityContributors(contributors, updatedProfessors);
+      
+      setProfessors(updatedProfessors);
+      setProfessorNames(prev => ({
+        ...prev,
+        [newProfId.trim()]: validationResponse.data.name
+      }));
+      setNewProfId('');
+      setError('');
+      setValidating(false);
+    } catch (err) {
+      console.error('Failed to add professor:', err);
+      setError(err.response?.data?.message || 'Failed to add professor');
+      setValidating(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateOpportunityContributors = async (updatedContributors, updatedProfessors) => {
     const token = localStorage.getItem('authToken');
     let endpoint = '';
     
@@ -204,12 +301,34 @@ const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType
 
     await axios.put(
       endpoint,
-      { contributors: updatedContributors },
+      { 
+        contributors: updatedContributors,
+        professors: updatedProfessors 
+      },
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
     if (onUpdate) {
       onUpdate();
+    }
+  };
+
+  const handleRemoveProfessor = async (profId) => {
+    if (!window.confirm('Remove this professor from contributors?')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const updatedProfessors = professors.filter(p => p !== profId);
+      await updateOpportunityContributors(contributors, updatedProfessors);
+      setProfessors(updatedProfessors);
+      setError('');
+    } catch (err) {
+      console.error('Failed to remove professor:', err);
+      setError('Failed to remove professor');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -234,7 +353,62 @@ const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType
 
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(80vh-140px)]">
-          {/* Add New Contributor */}
+          {/* Add New Professor */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Add Professor by ID
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newProfId}
+                onChange={(e) => setNewProfId(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAddProfessor()}
+                placeholder="Enter professor ID (e.g., PROF001)"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                disabled={loading}
+              />
+              <button
+                onClick={handleAddProfessor}
+                disabled={loading || validating}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 flex items-center gap-2"
+              >
+                <Plus size={18} />
+                {validating ? 'Validating...' : 'Add'}
+              </button>
+            </div>
+          </div>
+
+          {/* Professors List */}
+          {professors.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">
+                Professor Contributors ({professors.length})
+              </h3>
+              <div className="space-y-2">
+                {professors.map((profId) => (
+                  <div
+                    key={profId}
+                    className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{professorNames[profId] || 'Loading...'}</p>
+                      <p className="text-sm text-gray-600">ID: {profId}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveProfessor(profId)}
+                      disabled={loading}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Add New Student Contributor */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Add Student by Roll Number
@@ -251,11 +425,11 @@ const ManageContributorsModal = ({ isOpen, onClose, opportunity, opportunityType
               />
               <button
                 onClick={handleAddContributor}
-                disabled={loading}
+                disabled={loading || validating}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 flex items-center gap-2"
               >
                 <Plus size={18} />
-                Add
+                {validating ? 'Validating...' : 'Add'}
               </button>
             </div>
             {error && (

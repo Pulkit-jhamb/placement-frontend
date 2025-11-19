@@ -42,6 +42,7 @@ export const API_ENDPOINTS = {
   
   // ==================== ADMIN ====================
   STUDENTS: `${API_BASE_URL}/api/admin/students`,
+  PROFESSORS: `${API_BASE_URL}/api/admin/professors`,
   
   // ==================== ONBOARDING ====================
   ONBOARDING: `${API_BASE_URL}/api/onboarding`,

@@ -1,22 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const AddAdminOpportunityModal = ({ isOpen, onClose, onSubmit, editingItem, type }) => {
   const [formData, setFormData] = useState({
-    title: editingItem?.title || '',
-    domain: editingItem?.domain || '',
-    studentsRequired: editingItem?.studentsRequired || '',
-    duration: editingItem?.duration || '',
-    googleFormLink: editingItem?.googleFormLink || '',
-    description: editingItem?.description || '',
-    deadline: editingItem?.deadline || '',
-    professors: editingItem?.professors || [],
-    students: editingItem?.students || []
+    title: '',
+    domain: '',
+    studentsRequired: '',
+    duration: '',
+    googleFormLink: '',
+    description: '',
+    deadline: '',
+    status: 'Planning',
+    professors: [],
+    students: []
   });
 
   const [professorId, setProfessorId] = useState('');
   const [studentRollNo, setStudentRollNo] = useState('');
   const [error, setError] = useState('');
+
+  // Prefill form data when editingItem changes
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({
+        title: editingItem.title || '',
+        domain: editingItem.domain || '',
+        studentsRequired: editingItem.studentsRequired || '',
+        duration: editingItem.duration || '',
+        googleFormLink: editingItem.googleFormLink || '',
+        description: editingItem.description || '',
+        deadline: editingItem.deadline || '',
+        status: editingItem.status || 'Planning',
+        professors: editingItem.professors || [],
+        students: editingItem.students || []
+      });
+    } else {
+      // Reset form for new item
+      setFormData({
+        title: '',
+        domain: '',
+        studentsRequired: '',
+        duration: '',
+        googleFormLink: '',
+        description: '',
+        deadline: '',
+        status: 'Planning',
+        professors: [],
+        students: []
+      });
+    }
+    setError('');
+  }, [editingItem, isOpen]);
 
   const handleChange = (e) => {
     setFormData({
@@ -162,8 +196,8 @@ const AddAdminOpportunityModal = ({ isOpen, onClose, onSubmit, editingItem, type
             </div>
           </div>
 
-          {/* Duration and Deadline */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          {/* Duration, Deadline, and Status */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
                 Duration
@@ -190,6 +224,27 @@ const AddAdminOpportunityModal = ({ isOpen, onClose, onSubmit, editingItem, type
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                Status*
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Planning">Planning</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Completed">Completed</option>
+                <option value="Published">Published</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
             </div>
           </div>
 
