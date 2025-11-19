@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Send, Download } from 'lucide-react';
 import SalesSidebar from './sales_sidebar';
 import axios from 'axios';
-import { API_ENDPOINTS } from '../../config';
+import { API_ENDPOINTS, API_BASE_URL } from '../../config';
 
 const SalesAI = () => {
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const SalesAI = () => {
       const token = localStorage.getItem('authToken');
       // FIXED: Corrected API endpoint
       const response = await axios.post(
-        'http://localhost:5001/api/ai/sales/chat',
+        `${API_BASE_URL}/api/ai/sales/chat`,
         { message: userMessage },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -92,7 +92,7 @@ const SalesAI = () => {
       
       // Send the filtered students data to backend for Excel generation
       const response = await axios.post(
-        'http://localhost:5001/api/ai/sales/export-filtered-students',
+        `${API_BASE_URL}/api/ai/sales/export-filtered-students`,
         { students: students },
         { 
           headers: { Authorization: `Bearer ${token}` },

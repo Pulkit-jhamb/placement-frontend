@@ -42,7 +42,7 @@ const AIChatbot = () => {
   const fetchUserName = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get('http://localhost:5001/api/user', {
+      const response = await axios.get(`${API_BASE_URL}/api/user`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUserName(response.data.name || 'Student');
@@ -64,7 +64,7 @@ const AIChatbot = () => {
       const token = localStorage.getItem('authToken');
       
       const response = await axios.post(
-        'http://localhost:5001/api/ai/student/chat',
+        `${API_BASE_URL}/api/ai/student/chat`,
         { message: userMessage },
         { headers: { Authorization: `Bearer ${token}` } }
       );

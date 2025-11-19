@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = 'https://carevo-backend-rw11.onrender.com';
+export const API_BASE_URL = 'https://carevo-backend-rw11.onrender.com';
 
 // const API_BASE_URL = 'http://localhost:5001';
 

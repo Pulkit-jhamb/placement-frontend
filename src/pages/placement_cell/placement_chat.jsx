@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { Search, Settings, Bell, Send, X } from 'lucide-react';
 import PlacementSidebar from './placement_sidebar';
+import { API_BASE_URL } from '../../config';
 
 const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
   const [message, setMessage] = useState('');
@@ -22,7 +23,7 @@ const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
     const token = localStorage.getItem('authToken');
     if (!token) return;
 
-    socketRef.current = io('http://localhost:5001', {
+    socketRef.current = io(API_BASE_URL, {
       transports: ['websocket'],
       reconnection: true
     });
@@ -49,7 +50,7 @@ const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch('http://localhost:5001/api/user', {
+        const response = await fetch(`${API_BASE_URL}/api/user`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -66,7 +67,7 @@ const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
     const fetchConversations = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch('http://localhost:5001/api/conversations', {
+        const response = await fetch(`${API_BASE_URL}/api/conversations`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -90,7 +91,7 @@ const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/conversations/${selectedChat.id}/messages`, {
+        const response = await fetch(`${API_BASE_URL}/api/conversations/${selectedChat.id}/messages`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -149,7 +150,7 @@ const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
     searchTimeoutRef.current = setTimeout(async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch(`http://localhost:5001/api/chat/search-users?q=${encodeURIComponent(query)}`, {
+        const response = await fetch(`${API_BASE_URL}/api/chat/search-users?q=${encodeURIComponent(query)}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -166,7 +167,7 @@ const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
       const token = localStorage.getItem('authToken');
       
       // Create or get existing conversation
-      const response = await fetch('http://localhost:5001/api/conversations', {
+      const response = await fetch(`${API_BASE_URL}/api/conversations`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -175,10 +176,10 @@ const PlacementChat = ({ userName = "Prashant.S.Rana" }) => {
         body: JSON.stringify({ otherUserId: user.id })
       });
       
-      const data = await response.json();
+      await response.json();
       
       // Refresh conversations
-      const convResponse = await fetch('http://localhost:5001/api/conversations', {
+      const convResponse = await fetch(`${API_BASE_URL}/api/conversations`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const convData = await convResponse.json();

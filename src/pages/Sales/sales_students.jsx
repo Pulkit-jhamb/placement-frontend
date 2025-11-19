@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, ChevronDown, Users, Download } from 'lucide-react';
 import axios from 'axios';
 import SalesSidebar from './sales_sidebar';
-import { API_ENDPOINTS } from '../../config';
+import { API_ENDPOINTS, API_BASE_URL } from '../../config';
 
 const SalesStudents = () => {
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ const SalesStudents = () => {
       setExporting(true);
       const token = localStorage.getItem('authToken');
       
-      const response = await axios.get(`http://localhost:5001/api/admin/export-students`, {
+      const response = await axios.get(`${API_BASE_URL}/api/admin/export-students`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'
       });
