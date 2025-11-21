@@ -340,8 +340,8 @@ export default function Signup() {
             >
               <option value="student">Student</option>
               <option value="admin">Professor</option>
-              {/* <option value="sales">Sales</option>
-              <option value="placementCell">Placement Cell</option> */}
+              <option value="sales">Sales</option>
+              {/* <option value="placementCell">Placement Cell</option> */}
             </select>
           </div>
 

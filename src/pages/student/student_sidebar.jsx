@@ -46,11 +46,11 @@ const StudentSidebar = () => {
       path: '/student/patent',
       icon: <Lightbulb size={20} />
     },
-    {
-      name: 'Psychometric',
-      path: '/student/psychometric',
-      icon: <Brain size={20} />
-    }
+    // {
+    //   name: 'Psychometric',
+    //   path: '/student/psychometric',
+    //   icon: <Brain size={20} />
+    // }
   ];
 
   const isActive = (path) => {

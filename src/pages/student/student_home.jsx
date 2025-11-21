@@ -21,7 +21,7 @@ const StudentHome = () => {
   const [resumePreview, setResumePreview] = useState(null);
   const [uploadingResume, setUploadingResume] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [showSkillType, setShowSkillType] = useState('expertise');
+  const [showSkillType, setShowSkillType] = useState('tech');
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [showWorkExpModal, setShowWorkExpModal] = useState(false);
   const [showAddExpModal, setShowAddExpModal] = useState(false);
@@ -61,9 +61,6 @@ const StudentHome = () => {
           setCertifications(userData.certifications);
           setEditingCertifications(userData.certifications);
         }
-        
-        // Area of expertise and tech stack are already in userData.skills and userData.techStack
-        // These come from onboarding and are stored in the user profile
 
         // Fetch projects
         try {
@@ -99,10 +96,6 @@ const StudentHome = () => {
           console.log('No patents found:', err.message);
           setPatents([]);
         }
-
-        // Work experience is now loaded from user profile above
-
-        // Certifications already loaded above
 
       } catch (err) {
         console.error('Failed to fetch data:', err);
@@ -284,12 +277,12 @@ const StudentHome = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-white">
+      <div className="flex min-h-screen bg-[#f5f8fa]">
         <StudentSidebar />
         <main className="flex-1 ml-64 flex items-center justify-center">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
+            <p className="text-[#636363]">Loading...</p>
           </div>
         </main>
       </div>
@@ -297,270 +290,285 @@ const StudentHome = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-[#f5f8fa]">
       <StudentSidebar />
       
-      {/* Main content with left margin to avoid sidebar overlap */}
-      <main className="flex-1 ml-64 overflow-y-auto">
-        <div className="p-8 bg-white">
-          {/* Top Summary Cards */}
-          <div className="grid grid-cols-5 gap-6 mb-8">
-            {/* About Card */}
-            <div className="bg-white rounded-xl p-6">
-              <h2 className="text-sm text-gray-500 mb-3">About</h2>
-              <h3 className="text-2xl font-bold mb-3">{userProfile?.name || 'Student'}</h3>
-              <div className="space-y-1 text-sm">
-                <p><span className="text-gray-500">Branch:</span> <span className="font-medium">{extractBranchCode(userProfile?.field) || 'CSE'}</span></p>
-                <p><span className="text-gray-500">Year:</span> <span className="font-medium">{userProfile?.year?.replace(' Year', '') || '3rd'}</span></p>
+      {/* Main content */}
+      <main className="flex-1 ml-64 p-8">
+        <div className="max-w-[1400px] mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <p className="text-[#636363] text-base mb-1">Welcome,</p>
+            <div className="flex justify-between items-start">
+              <h1 className="text-[48px] font-bold text-[#181818] leading-tight">{userProfile?.name || 'Student'}</h1>
+              <div className="text-right">
+                <p className="text-[#636363] text-base leading-relaxed">
+                  Branch: <span className="text-[#b6b6b6]">{extractBranchCode(userProfile?.field) || 'RAI'}</span>
+                </p>
+                <p className="text-[#636363] text-base leading-relaxed">
+                  Year: <span className="text-[#181818]">{userProfile?.year?.replace(' Year', '') || '3rd'}</span>
+                </p>
               </div>
-            </div>
-
-            {/* Resume Card */}
-            <div className="bg-white rounded-xl p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={handleResumeClick}>
-              <h2 className="text-sm text-gray-500 mb-3">Resume</h2>
-              <h3 className="text-5xl font-bold mb-1">{atsScore ? `${atsScore.percentage}%` : '—'}</h3>
-              <p className="text-sm text-gray-600">
-                {atsScore ? `ATS Score - ${atsScore.rating}` : 'Upload resume below to get ATS score'}
-              </p>
-            </div>
-
-            {/* Projects Card */}
-            <div className="bg-white rounded-xl p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={handleProjectsClick}>
-              <h2 className="text-sm text-gray-500 mb-3">Projects</h2>
-              <h3 className="text-5xl font-bold mb-1">{projects.length}</h3>
-              <p className="text-sm text-gray-600">{projects[0]?.title || 'AI Chatbot'}</p>
-            </div>
-
-            {/* Work Experience Card */}
-            <div className="bg-white rounded-xl p-6 relative">
-              <button 
-                onClick={() => {
-                  setEditingExperiences([...workExperience]);
-                  setShowWorkExpModal(true);
-                }}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <Pencil size={16} />
-              </button>
-              <h2 className="text-sm text-gray-500 mb-3">Work Experience</h2>
-              <h3 className="text-5xl font-bold mb-1">{workExperience.length}</h3>
-              <p className="text-sm text-gray-600">
-                {workExperience[0] ? `${workExperience[0].title} at ${workExperience[0].company}` : 'Intern at Google'}
-              </p>
-            </div>
-
-            {/* Patents Card */}
-            <div className="bg-white rounded-xl p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={handlePatentsClick}>
-              <h2 className="text-sm text-gray-500 mb-3">Patents</h2>
-              <h3 className="text-5xl font-bold mb-1">{patents.length}</h3>
-              <p className="text-sm text-gray-600">{patents[0]?.title || 'Quantum Chip'}</p>
             </div>
           </div>
 
-          {/* Main 3-column layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            {/* Left Column - Academic Performance */}
-            <div className="bg-white rounded-xl p-6 relative">
-              <button 
-                onClick={() => setShowCGPAModal(true)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <Pencil size={16} />
-              </button>
-              <h2 className="text-xl font-bold mb-6">Academic Performance</h2>
-              
-              <div className="flex flex-col items-center justify-center h-full py-8">
-                {/* CGPA Circle */}
-                <div className="relative w-64 h-64">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
-                    <circle
-                      cx="100"
-                      cy="100"
-                      r="70"
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeWidth="20"
-                    />
-                    <circle
-                      cx="100"
-                      cy="100"
-                      r="70"
-                      fill="none"
-                      stroke="url(#gradient)"
-                      strokeWidth="20"
-                      strokeDasharray={`${2 * Math.PI * 70}`}
-                      strokeDashoffset={2 * Math.PI * 70 * (1 - (userProfile?.cgpa || 0) / 10)}
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#06b6d4" />
-                        <stop offset="100%" stopColor="#3b82f6" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-base text-gray-500 mb-2">CGPA</span>
-                    <span className="text-5xl font-bold">{(userProfile?.cgpa || 0).toFixed(2)}</span>
+          {/* Two-Row Grid Layout */}
+          <div className="space-y-6">
+            {/* First Row */}
+            <div className="flex gap-6">
+              {/* Academic Performance */}
+              <div className="bg-[#d8eefc] rounded-[12px] p-6 relative flex-shrink-0" style={{ width: '380px', height: '220px' }}>
+                <button 
+                  onClick={() => setShowCGPAModal(true)}
+                  className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <Pencil size={18} />
+                </button>
+                <h2 className="text-[20px] font-bold text-[#181818] mb-4">
+                  Academic Performance
+                </h2>
+                <div className="flex justify-center items-center">
+                  <div className="relative w-36 h-36">
+                    <svg className="w-full h-full transform -rotate-90">
+                      <circle
+                        cx="72"
+                        cy="72"
+                        r="60"
+                        stroke="#e0e7ff"
+                        strokeWidth="12"
+                        fill="none"
+                      />
+                      <circle
+                        cx="72"
+                        cy="72"
+                        r="60"
+                        stroke="#4298c7"
+                        strokeWidth="12"
+                        fill="none"
+                        strokeDasharray={`${((userProfile?.cgpa || 0) / 10) * 376.99} 376.99`}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <p className="text-xs text-[#636363]">CGPA</p>
+                      <p className="text-[32px] font-bold text-[#181818] leading-none">{(userProfile?.cgpa || 0).toFixed(2)}</p>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Skills */}
+              <div className="bg-[#e3e5e9] rounded-[12px] p-6 flex-shrink-0" style={{ width: '286px', height: '220px' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-[20px] font-bold text-[#181818]">Skills</h2>
+                  <div className="flex gap-1.5">
+                    <button 
+                      onClick={() => setShowSkillType('tech')}
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        showSkillType === 'tech' 
+                          ? 'bg-[#181818] text-white' 
+                          : 'bg-transparent text-[#181818]'
+                      }`}
+                    >
+                      Tech
+                    </button>
+                    <button 
+                      onClick={() => setShowSkillType('nontech')}
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        showSkillType === 'nontech' 
+                          ? 'bg-[#181818] text-white' 
+                          : 'bg-transparent text-[#181818]'
+                      }`}
+                    >
+                      Non-Tech
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-2.5">
+                  {showSkillType === 'tech' ? (
+                    userProfile?.techStack && userProfile.techStack.length > 0 ? (
+                      userProfile.techStack.slice(0, 3).map((tech, idx) => {
+                        const colors = ['#d9f0db', '#fce7d6', '#f4d9da'];
+                        return (
+                          <div 
+                            key={idx} 
+                            className="rounded-[16px] px-4 py-2 flex justify-between items-center"
+                            style={{ backgroundColor: colors[idx % 3], height: '32px' }}
+                          >
+                            <span className="text-[#181818] font-medium text-sm">{tech}</span>
+                            <span className="w-2 h-2 bg-[#181818] rounded-full"></span>
+                          </div>
+                        );
+                      })
+                    ) : topSkills.length > 0 ? (
+                      topSkills.map((skill, idx) => {
+                        const colors = ['#d9f0db', '#fce7d6', '#f4d9da'];
+                        return (
+                          <div 
+                            key={idx} 
+                            className="rounded-[16px] px-4 py-2 flex justify-between items-center"
+                            style={{ backgroundColor: colors[idx % 3], height: '32px' }}
+                          >
+                            <span className="text-[#181818] font-medium text-sm">{skill}</span>
+                            <span className="w-2 h-2 bg-[#181818] rounded-full"></span>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div 
+                        className="rounded-[16px] px-4 py-2 flex justify-between items-center"
+                        style={{ backgroundColor: '#d9f0db', height: '32px' }}
+                      >
+                        <span className="text-[#181818] font-medium text-sm">Python</span>
+                        <span className="w-2 h-2 bg-[#181818] rounded-full"></span>
+                      </div>
+                    )
+                  ) : (
+                    userProfile?.skills && userProfile.skills.length > 0 ? (
+                      userProfile.skills.slice(0, 3).map((skill, idx) => {
+                        const colors = ['#d9f0db', '#fce7d6', '#f4d9da'];
+                        return (
+                          <div 
+                            key={idx} 
+                            className="rounded-[16px] px-4 py-2 flex justify-between items-center"
+                            style={{ backgroundColor: colors[idx % 3], height: '32px' }}
+                          >
+                            <span className="text-[#181818] font-medium text-sm">{skill}</span>
+                            <span className="w-2 h-2 bg-[#181818] rounded-full"></span>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-[#636363] text-center py-4 text-sm">No non-tech skills added</p>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* Patents */}
+              <div 
+                className="bg-[#f7d7d6] rounded-[12px] p-6 cursor-pointer hover:shadow-md transition-shadow flex-shrink-0" 
+                onClick={handlePatentsClick}
+                style={{ width: '260px', height: '220px' }}
+              >
+                <h2 className="text-[20px] font-bold text-[#181818] mb-3">Patents</h2>
+                <p className="text-[72px] font-bold text-[#181818] leading-none mb-2">{patents.length}</p>
+                <p className="text-[#636363] text-sm">{patents[0]?.title || 'Quantum Chip'}</p>
+              </div>
+
+              {/* Work Experience */}
+              <div className="bg-[#d7efd8] rounded-[12px] p-6 relative flex-shrink-0" style={{ width: '260px', height: '220px' }}>
+                <button 
+                  onClick={() => {
+                    setEditingExperiences([...workExperience]);
+                    setShowWorkExpModal(true);
+                  }}
+                  className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <Pencil size={18} />
+                </button>
+                <h2 className="text-[20px] font-bold text-[#181818] mb-3">
+                  Work Experience
+                </h2>
+                <p className="text-[72px] font-bold text-[#181818] leading-none mb-2">{workExperience.length}</p>
+                <p className="text-[#636363] text-sm">
+                  {workExperience[0] ? `${workExperience[0].title} at ${workExperience[0].company}` : 'Intern at Google'}
+                </p>
+              </div>
             </div>
 
-            {/* Middle Column - Certifications & Achievements */}
-            <div className="bg-white rounded-xl p-6 relative">
-              <button 
-                onClick={() => {
-                  setEditingCertifications([...certifications]);
-                  setShowCertModal(true);
-                }}
-                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <Pencil size={16} />
-              </button>
-              <h2 className="text-xl font-bold mb-6">Certifications & Achievements</h2>
-              
-              <div className="space-y-4">
-                {certifications.length > 0 ? certifications.slice(0, 3).map((cert, idx) => (
-                  <div key={idx} className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex-shrink-0"></div>
-                    <div>
-                      <h3 className="font-semibold text-base">{cert.name || cert.title}</h3>
-                      <p className="text-sm text-gray-600">{cert.date || cert.issuedDate || 'N/A'}</p>
+            {/* Second Row */}
+            <div className="flex gap-6">
+              {/* Certifications & Achievements */}
+              <div className="bg-[#e3e5e9] rounded-[12px] p-6 relative flex-shrink-0" style={{ width: '380px', height: '440px' }}>
+                <button 
+                  onClick={() => {
+                    setEditingCertifications([...certifications]);
+                    setShowCertModal(true);
+                  }}
+                  className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <Pencil size={18} />
+                </button>
+                <h2 className="text-[20px] font-bold text-[#181818] mb-4">
+                  Certifications & Achievements
+                </h2>
+                <div className="space-y-3">
+                  {certifications.length > 0 ? certifications.slice(0, 3).map((cert, idx) => (
+                    <div key={idx}>
+                      <p className="text-[#181818] font-bold text-[15px]">
+                        {cert.name || cert.title || 'Smart India Hackathon'}
+                      </p>
+                      <p className="text-[#636363] text-xs">{cert.date || cert.issuedDate || 'Jan 2026'}</p>
                     </div>
-                  </div>
-                )) : (
-                  <div className="text-center py-8 text-gray-500 text-sm">
-                    No certifications added yet
-                  </div>
-                )}
+                  )) : (
+                    <>
+                      <div>
+                        <p className="text-[#181818] font-bold text-[15px]">Smart India Hackathon</p>
+                        <p className="text-[#636363] text-xs">Jan 2026</p>
+                      </div>
+                      <div>
+                        <p className="text-[#181818] font-bold text-[15px]">Smart India Hackathon</p>
+                        <p className="text-[#636363] text-xs">Jan 2026</p>
+                      </div>
+                      <div>
+                        <p className="text-[#181818] font-bold text-[15px]">Smart India Hackathon</p>
+                        <p className="text-[#636363] text-xs">Jan 2026</p>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Right Column - Resume */}
-            <div className="bg-white rounded-xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold">Resume</h2>
+              {/* Resume Upload */}
+              <div className="bg-[#d9dadf] rounded-[12px] p-6 flex flex-col shadow-sm flex-shrink-0" style={{ width: '286px', height: '440px' }}>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-[20px] font-bold text-[#181818]">Resume</h2>
+                  <svg
+                    className="w-5 h-5 text-[#636363]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1 flex items-center justify-center">
+                  <button
+                    onClick={handleResumeUpload}
+                    disabled={uploadingResume}
+                    className="px-6 py-2 bg-[#181818] text-white rounded-full text-sm font-medium hover:bg-[#2c2c2c] transition-colors disabled:opacity-50"
+                  >
+                    {uploadingResume ? 'Uploading...' : 'Upload +'}
+                  </button>
+                </div>
               </div>
-              
-              <div className="bg-gray-50 rounded-lg p-8 min-h-[250px] flex items-center justify-center mb-4 relative">
-                {resumeUrl ? (
-                  <div className="text-center">
-                    <svg className="w-16 h-16 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p className="text-sm font-medium text-gray-900 mb-1">Resume Uploaded</p>
-                    <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">
-                      View Resume
-                    </a>
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <svg className="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <p className="text-xs text-gray-500">No resume uploaded</p>
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={handleResumeUpload}
-                disabled={uploadingResume}
-                className="w-full px-4 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors text-sm font-medium flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+
+              {/* Projects */}
+              <div 
+                className="bg-[#fde3cd] rounded-[12px] p-6 cursor-pointer hover:shadow-md transition-shadow flex-shrink-0" 
+                onClick={handleProjectsClick}
+                style={{ width: '260px', height: '220px' }}
               >
-                <Upload size={18} />
-                {uploadingResume ? 'Uploading...' : 'Upload +'}
-              </button>
-              <div className="mt-4">
-                <button
-                  onClick={handleAtsAnalyzeFromDrive}
-                  disabled={atsLoading}
-                  className={`w-full px-4 py-2 rounded-lg text-xs font-medium border ${
-                    atsLoading
-                      ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  {atsLoading ? 'Analyzing ATS from Drive...' : 'Analyze ATS Score from Drive Link'}
-                </button>
-                {atsError && (
-                  <p className="mt-2 text-[11px] text-red-600 text-center">{atsError}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom 2-column layout - Psychometric & Skills */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Psychometric Results */}
-            <div className="bg-white rounded-xl p-6">
-              <h2 className="text-xl font-bold mb-4">Psychometric Results</h2>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                This College student interested in UI/UX design typically exhibit high openness to experience, 
-                strong aesthetic sensitivity, empathy for users.
-              </p>
-            </div>
-
-            {/* Skills */}
-            <div className="bg-white rounded-xl p-6">
-              <h2 className="text-xl font-bold mb-4">Skills</h2>
-              
-              {/* Area of Expertise / Tech Stack Toggle */}
-              <div className="flex gap-2 mb-6">
-                <button 
-                  onClick={() => setShowSkillType('expertise')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    showSkillType === 'expertise' 
-                      ? 'bg-gray-900 text-white' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  Area of Expertise
-                </button>
-                <button 
-                  onClick={() => setShowSkillType('techstack')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    showSkillType === 'techstack' 
-                      ? 'bg-gray-900 text-white' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  Tech Stack
-                </button>
+                <h2 className="text-[20px] font-bold text-[#181818] mb-3">Projects</h2>
+                <p className="text-[72px] font-bold text-[#181818] leading-none mb-2">{projects.length}</p>
+                <p className="text-[#636363] text-sm">{projects[0]?.title || 'AI Chatbot'}</p>
               </div>
 
-              {/* Skills List */}
-              <div className="space-y-4">
-                {showSkillType === 'expertise' ? (
-                  userProfile?.skills && userProfile.skills.length > 0 ? (
-                    userProfile.skills.slice(0, 3).map((skill, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-2">
-                        <span className="text-base font-medium text-gray-900">{skill}</span>
-                        <span className="w-2 h-2 rounded-full bg-gray-900"></span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500 text-center py-4">No area of expertise added</p>
-                  )
-                ) : (
-                  userProfile?.techStack && userProfile.techStack.length > 0 ? (
-                    userProfile.techStack.map((tech, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-2">
-                        <span className="text-base font-medium text-gray-900">{tech}</span>
-                        <span className="w-2 h-2 rounded-full bg-gray-900"></span>
-                      </div>
-                    ))
-                  ) : topSkills.length > 0 ? (
-                    topSkills.map((skill, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-2">
-                        <span className="text-base font-medium text-gray-900">{skill}</span>
-                        <span className="w-2 h-2 rounded-full bg-gray-900"></span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500 text-center py-4">No tech stack added</p>
-                  )
-                )}
+              {/* Resume ATS Score */}
+              <div 
+                className="bg-[#d6e8f8] rounded-[12px] p-6 cursor-pointer hover:shadow-md transition-shadow flex-shrink-0" 
+                onClick={handleResumeClick}
+                style={{ width: '260px', height: '220px' }}
+              >
+                <h2 className="text-[20px] font-bold text-[#181818] mb-3">Resume</h2>
+                <p className="text-[72px] font-bold text-[#181818] leading-none mb-2">{atsScore ? `${atsScore.percentage}%` : '88%'}</p>
+                <p className="text-[#636363] text-sm">ATS Score</p>
               </div>
             </div>
           </div>
@@ -622,7 +630,7 @@ const StudentHome = () => {
         onSubmit={handleAddExperience}
       />
 
-      {/* Certifications List Modal - Shows list with add/remove */}
+      {/* Certifications List Modal */}
       {showCertModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -684,40 +692,21 @@ const StudentHome = () => {
   );
 };
 
-// Helper functions
-function formatField(field) {
-  if (!field) return '';
-  return field.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
+// Helper function
 function extractBranchCode(field) {
   if (!field) return '';
   
-  // Extract capital letters or letters in parentheses
-  // Example: "Computer Science (CSE)" -> "CSE"
-  // Example: "Information Technology (IT)" -> "IT"
   const bracketMatch = field.match(/\(([A-Z]{2,5})\)/);
   if (bracketMatch) {
     return bracketMatch[1];
   }
   
-  // If no brackets, extract capital letters
   const capitals = field.match(/[A-Z]/g);
   if (capitals && capitals.length >= 2) {
     return capitals.join('').substring(0, 5);
   }
   
-  // Fallback to first 3 characters
   return field.substring(0, 3).toUpperCase();
-}
-
-function formatYear(year) {
-  if (!year) return '';
-  const n = Number(year);
-  if (!n) return year;
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return `${n}${(s[(v - 20) % 10] || s[v] || s[0])}`;
 }
 
 export default StudentHome;

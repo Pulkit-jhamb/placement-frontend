@@ -214,6 +214,16 @@ export default function OnboardingSkills() {
             {isLoading ? "Saving..." : "Next"}
           </button>
         </div>
+        <div className="pt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={isLoading}
+            className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
+            >
+            Skip
+          </button>
+        </div>
       </div>
     </div>
   );

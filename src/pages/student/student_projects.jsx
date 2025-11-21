@@ -171,6 +171,85 @@ const Projects = () => {
   const displayedYourProjects = showAllYourProjects ? filteredYourProjects : filteredYourProjects.slice(0, 4);
   const displayedProfessorProjects = showAllProfessorProjects ? filteredProfessorProjects : filteredProfessorProjects.slice(0, 4);
 
+  const palette = ['bg-[#d7efff]', 'bg-[#fbd4d3]', 'bg-[#fdecc8]', 'bg-[#d6f5d6]'];
+
+  const renderProjectCard = (project, idx, variant = 'student') => {
+    const bgColor = palette[idx % palette.length];
+    const isStudent = variant === 'student';
+
+    return (
+      <div key={project.id || idx} className="rounded-[24px] border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-shadow flex flex-col">
+        <div className={`${bgColor} h-28 rounded-t-[24px] relative`}>
+          {isStudent ? (
+            <div className="absolute inset-x-4 top-4 flex justify-between">
+              <button
+                onClick={() => handleDeleteProject(project.id)}
+                className="w-9 h-9 rounded-full bg-white/80 flex items-center justify-center shadow hover:bg-red-50"
+                title="Delete project"
+              >
+                <Trash2 size={16} className="text-red-600" />
+              </button>
+              <button
+                onClick={() => {
+                  setEditingProject(project);
+                  setIsModalOpen(true);
+                }}
+                className="w-9 h-9 rounded-full bg-white/80 flex items-center justify-center shadow hover:bg-gray-100"
+                title="Edit project"
+              >
+                <Pencil size={16} className="text-gray-700" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => handleApplyToProject(project)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 flex items-center justify-center shadow hover:bg-gray-100"
+              title="Apply"
+            >
+              <Plus size={16} className="text-gray-700" />
+            </button>
+          )}
+        </div>
+        <div className="p-5 flex flex-col gap-3 flex-1">
+          <div>
+            <p className="text-sm uppercase tracking-wide text-gray-400 mb-1">{isStudent ? 'ML Project' : 'Professor Project'}</p>
+            <h3 className="text-lg font-semibold text-gray-900 leading-snug">{project.title}</h3>
+          </div>
+
+          {isStudent ? (
+            <p className="text-sm text-gray-500">ML, Python</p>
+          ) : (
+            <p className="text-sm text-gray-500">{project.professorName || 'Prof. Prashant Singh Rana'}</p>
+          )}
+
+          <div className="text-sm text-gray-600 space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-gray-900"></span>
+              <span>
+                {project.techStack?.length
+                  ? project.techStack.slice(0, 3).join(', ')
+                  : project.category || 'Machine Learning'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-gray-900"></span>
+              <span>{project.githubLink || project.websiteLink || 'www.xyz.com'}</span>
+            </div>
+          </div>
+
+          <div className="mt-auto pt-4">
+            <button
+              onClick={() => (isStudent ? setIsModalOpen(true) : handleApplyToProject(project))}
+              className={`${isStudent ? 'bg-white border border-gray-300 text-gray-900' : 'bg-gray-900 text-white'} w-full py-2.5 rounded-full font-semibold hover:opacity-90 transition`}
+            >
+              {isStudent ? 'View' : 'Apply'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
@@ -189,45 +268,44 @@ const Projects = () => {
     <div className="flex min-h-screen bg-gray-50">
       <StudentSidebar />
 
-      <main className="flex-1 p-8 ml-64">
-        {/* Header with Search */}
-        <header className="mb-8">
-          <div className="relative max-w-md">
-            <input
-              type="text"
-              placeholder="Search projects..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200"
-            />
-            <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </header>
+      <main className="flex-1 ml-64 bg-[#f6f6f6]">
+        <div className="px-6 sm:px-10 py-10 w-full">
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 flex items-center justify-between">
-            <span>{error}</span>
-            <button onClick={() => setError('')} className="text-red-800 hover:text-red-900 text-xl">×</button>
-          </div>
-        )}
+          <header className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900">Ongoing Projects</h1>
+              <p className="text-gray-500">Find all your projects here</p>
+            </div>
+            <div className="relative w-full md:w-80">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search projects..."
+                className="w-full pl-11 pr-4 py-3 rounded-full border border-gray-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+              />
+              <svg className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </header>
 
-        <>
-          {/* Your Projects */}
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Your Projects</h2>
-              <div className="flex flex-col items-end gap-2">
-                <button 
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-                >
-                  <Plus size={18} />
-                  Add Project
-                </button>
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 flex items-center justify-between">
+              <span>{error}</span>
+              <button onClick={() => setError('')} className="text-red-800 hover:text-red-900 text-xl">×</button>
+            </div>
+          )}
+
+          <section className="mb-16">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900">Your Projects</h2>
+                <p className="text-gray-500">Find all your projects here</p>
+              </div>
+              <div className="flex items-center gap-4">
                 {yourProjects.length > 4 && (
-                  <button 
+                  <button
                     onClick={() => setShowAllYourProjects(!showAllYourProjects)}
                     className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
                   >
@@ -237,79 +315,40 @@ const Projects = () => {
                     </svg>
                   </button>
                 )}
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900 text-white hover:bg-gray-800"
+                >
+                  <Plus size={16} /> Add Project
+                </button>
               </div>
             </div>
-            <p className="text-gray-600 mb-6">Find your all projects here</p>
-            
+
             {yourProjects.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+              <div className="text-center py-16 bg-white rounded-[32px] border border-dashed border-gray-300">
                 <p className="text-gray-500 mb-4">No projects yet. Add your first project!</p>
-                <button 
+                <button
                   onClick={() => setIsModalOpen(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800"
                 >
-                  <Plus size={18} />
-                  Add Project
+                  <Plus size={18} /> Create Project
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-4 gap-6">
-                {displayedYourProjects.map((project, idx) => (
-                  <div key={idx} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow relative">
-                    <button
-                      onClick={() => handleDeleteProject(project.id)}
-                      className="absolute top-2 left-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
-                      title="Delete project"
-                    >
-                      <Trash2 size={16} className="text-red-600" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingProject(project);
-                        setIsModalOpen(true);
-                      }}
-                      className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                      title="Edit project"
-                    >
-                      <Pencil size={16} className="text-gray-700" />
-                    </button>
-                    <div className="h-40 bg-gray-200"></div>
-                    <div className="p-4 flex flex-col">
-                      <h3 className="font-semibold mb-1">{project.title}</h3>
-                      <p className="text-sm text-gray-600 mb-3">Your Project</p>
-                      {project.techStack && project.techStack.length > 0 && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                          </svg>
-                          {project.techStack.slice(0, 3).join(', ')}
-                        </div>
-                      )}
-                      {project.githubLink && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
-                          GitHub Link
-                        </div>
-                      )}
-                      <div className="flex-grow"></div>
-                      <button className="w-full mt-3 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {displayedYourProjects.map((project, idx) => renderProjectCard(project, idx, 'student'))}
               </div>
             )}
           </section>
 
-          {/* Professor's Projects */}
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Professor's Projects</h2>
+          {/* <section>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900">Professor's Projects</h2>
+                <p className="text-gray-500">Find all professor's projects here</p>
+              </div>
               {filteredProfessorProjects.length > 4 && (
-                <button 
+                <button
                   onClick={() => setShowAllProfessorProjects(!showAllProfessorProjects)}
                   className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
                 >
@@ -320,53 +359,21 @@ const Projects = () => {
                 </button>
               )}
             </div>
-            <p className="text-gray-600 mb-6">Find all professor's projects here</p>
-            
+
             {professorProjects.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+              <div className="text-center py-16 bg-white rounded-[32px] border border-dashed border-gray-300">
                 <p className="text-gray-500">No professor projects available at the moment.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-4 gap-6">
-                {displayedProfessorProjects.map((project, idx) => (
-                  <div key={idx} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="h-40 bg-gray-200"></div>
-                    <div className="p-4">
-                      <h3 className="font-semibold mb-1">{project.title}</h3>
-                      <p className="text-sm text-gray-600 mb-3">{project.professorName || 'Professor'}</p>
-                      {project.category && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                          </svg>
-                          {project.category}
-                        </div>
-                      )}
-                      {project.description && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                          {project.description.substring(0, 30)}...
-                        </div>
-                      )}
-                      <button 
-                        onClick={() => handleApplyToProject(project)}
-                        className="w-full mt-3 px-4 py-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-gray-800"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {displayedProfessorProjects.map((project, idx) => renderProjectCard(project, idx, 'professor'))}
               </div>
             )}
-          </section>
-        </>
+          </section> */}
+        </div>
       </main>
 
-      {/* Add/Edit Project Modal */}
-      <AddProjectModal 
+      <AddProjectModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);

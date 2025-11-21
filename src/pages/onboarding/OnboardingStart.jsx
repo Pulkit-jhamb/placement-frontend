@@ -10,6 +10,8 @@ export default function OnboardingStart() {
     mobile: "",
     cgpa: "",
     rollNo: "",
+    secondaryMobile: "",
+    secondaryEmail: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -65,6 +67,16 @@ export default function OnboardingStart() {
       return;
     }
 
+    if (form.secondaryMobile && (form.secondaryMobile.length !== 10 || !/^\d+$/.test(form.secondaryMobile))) {
+      setError("Please enter a valid 10-digit secondary mobile number");
+      return;
+    }
+
+    if (form.secondaryEmail && !/^([a-zA-Z0-9_\-.+])+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(form.secondaryEmail)) {
+      setError("Please enter a valid secondary email address");
+      return;
+    }
+
     if (form.rollNo.length !== 9 || !/^\d+$/.test(form.rollNo)) {
       setError("Please enter a valid 9-digit roll number");
       return;
@@ -91,6 +103,8 @@ export default function OnboardingStart() {
             mobile: form.mobile,
             cgpa: parseFloat(form.cgpa),
             rollNo: form.rollNo,
+            secondaryMobile: form.secondaryMobile,
+            secondaryEmail: form.secondaryEmail,
           }
         },
         {
@@ -217,6 +231,27 @@ export default function OnboardingStart() {
           </div>
 
           <div>
+            <label htmlFor="secondaryMobile" className="block text-sm font-medium text-gray-700 mb-1">
+              Secondary contact number (optional)
+            </label>
+            <div className="flex gap-2">
+              <div className="flex items-center px-4 py-3 border border-gray-300 rounded-xl bg-gray-50">
+                <span className="text-gray-700">+91</span>
+              </div>
+              <input
+                id="secondaryMobile"
+                name="secondaryMobile"
+                type="tel"
+                value={form.secondaryMobile}
+                onChange={handleChange}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+                placeholder="Optional"
+                maxLength="10"
+              />
+            </div>
+          </div>
+
+          <div>
             <label htmlFor="cgpa" className="block text-sm font-medium text-gray-700 mb-1">
               What's your CGPA? (out of 10)
             </label>
@@ -232,6 +267,21 @@ export default function OnboardingStart() {
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
               placeholder="e.g., 8.88"
               required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="secondaryEmail" className="block text-sm font-medium text-gray-700 mb-1">
+              Secondary email (personal)
+            </label>
+            <input
+              id="secondaryEmail"
+              name="secondaryEmail"
+              type="email"
+              value={form.secondaryEmail}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+              placeholder="example@gmail.com"
             />
           </div>
 

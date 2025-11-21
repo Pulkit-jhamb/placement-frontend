@@ -1,7 +1,7 @@
 // API Configuration
-export const API_BASE_URL = 'https://carevo-backend-rw11.onrender.com';
+// export const API_BASE_URL = 'https://carevo-backend-rw11.onrender.com';
 
-// const API_BASE_URL = 'http://localhost:5001';
+export const API_BASE_URL = 'http://localhost:5001';
 
 // API Configuration
 export const API_ENDPOINTS = {
@@ -34,6 +34,7 @@ export const API_ENDPOINTS = {
   // Student's own projects (GitHub repos, personal projects)
   PROJECTS: `${API_BASE_URL}/api/user/projects`,
   PATENTS: `${API_BASE_URL}/api/user/patents`,
+  RESEARCH: `${API_BASE_URL}/api/user/research`,
   WORK_EXPERIENCE: `${API_BASE_URL}/api/user/work-experience`,
   EVENTS: `${API_BASE_URL}/api/user/events`,
   SEMESTERS: `${API_BASE_URL}/api/user/semesters`,
@@ -42,6 +43,10 @@ export const API_ENDPOINTS = {
   // ==================== ADMIN ====================
   STUDENTS: `${API_BASE_URL}/api/admin/students`,
   PROFESSORS: `${API_BASE_URL}/api/admin/professors`,
+
+  // ==================== SALES ====================
+  SALES_STUDENTS: `${API_BASE_URL}/api/sales/students`,
+  SALES_STUDENT_DETAIL: (studentId) => `${API_BASE_URL}/api/sales/students/${studentId}`,
   
   // ==================== ONBOARDING ====================
   ONBOARDING: `${API_BASE_URL}/api/onboarding`,

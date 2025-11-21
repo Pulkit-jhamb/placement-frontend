@@ -107,6 +107,26 @@ export default function OnboardingTechStack() {
     navigate("/onboarding/skills");
   };
 
+  const handleSkip = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("authToken");
+      await axios.post(
+        API_ENDPOINTS.ONBOARDING,
+        { completed: true },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      localStorage.setItem("onboardingCompleted", "true");
+      navigate("/student/home", { replace: true });
+    } catch (err) {
+      console.error("Error skipping onboarding:", err);
+      setError(err.response?.data?.message || "Failed to skip onboarding. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">
       <div className="w-full max-w-3xl">
@@ -165,6 +185,16 @@ export default function OnboardingTechStack() {
             className="flex-1 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
             {isLoading ? "Saving..." : "Next"}
+          </button>
+        </div>
+        <div className="pt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={isLoading}
+            className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
+            >
+            Skip
           </button>
         </div>
       </div>
